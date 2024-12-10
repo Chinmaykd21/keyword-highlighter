@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Keyword Highlighter",
+  "version": "1.0.0",
+  "description": "A simple chrome extension to highlight keywords on a web page",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": ["scripting", "tabs", "activeTab"],
+  "host_permissions": ["https://*/*", "http://*/*"]
+}
