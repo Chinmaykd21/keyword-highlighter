@@ -102,6 +102,46 @@ function App() {
     });
   };
 
+  const resetHighlightedKeywords = async () => {
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id! },
+      func: () => {
+        const revertText = (node: Node) => {
+          if (!node || !node.childNodes) return;
+
+          Array.from(node.childNodes).forEach((child) => {
+            if (child.nodeType === Node.ELEMENT_NODE) {
+              const element = child as HTMLElement;
+
+              if (
+                element.tagName === "SPAN" &&
+                element.style.backgroundColor === "yellow"
+              ) {
+                // Replace the <span> with its text content
+                const parent = element.parentNode;
+                parent?.replaceChild(
+                  document.createTextNode(element.textContent || ""),
+                  element
+                );
+              } else {
+                revertText(child); // Recursively process child nodes
+              }
+            }
+          });
+        };
+
+        revertText(document.body);
+      },
+    });
+
+    setKeywords([]); // Clear the keywords list
+  };
+
   return (
     <>
       <div>
@@ -125,6 +165,9 @@ function App() {
         ></textarea>
         <button className="card-button" onClick={highlightKeywords}>
           Highlight Keywords
+        </button>
+        <button className="card-button" onClick={resetHighlightedKeywords}>
+          Reset
         </button>
       </div>
     </>
