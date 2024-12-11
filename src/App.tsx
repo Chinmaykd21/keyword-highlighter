@@ -1,5 +1,3 @@
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import { useRef, useState } from "react";
 
@@ -144,25 +142,20 @@ function App() {
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Keyword Highlighter</h1>
+      <h3>Keyword Highlighter</h3>
       <div className="card">
-        <p>Enter keywords that you want to highlight separated by comma</p>
+        {/* TODO: Apply styling to adjust fonts */}
+        <p className="card-description">
+          Enter keywords that you want to highlight separated by comma
+        </p>
         <textarea
           className="card-textarea"
           ref={textAreaRef}
           placeholder="Please enter keywords separated by comma"
-          defaultValue="Citizenship, Visa, H1-B, H1B"
           rows={5}
-          cols={40}
+          cols={45}
         ></textarea>
+        {/* TODO: Apply styling to these buttons */}
         <button className="card-button" onClick={highlightKeywords}>
           Highlight Keywords
         </button>
