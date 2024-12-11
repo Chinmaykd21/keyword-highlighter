@@ -1,13 +1,22 @@
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 function App() {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [keywords, setKeywords] = useState<string[]>([]);
 
   const highlightKeywords = async () => {
-    if (!inputRef.current) return;
+    if (!textAreaRef.current) return;
+
+    const newKeywords = textAreaRef.current.value
+      .split(",")
+      .map((k) => k.trim())
+      .filter((k) => k);
+
+    const combinedKeywords = Array.from(new Set([...keywords, ...newKeywords])); // Combine old and new keywords
+    setKeywords(combinedKeywords);
 
     const [tab] = await chrome.tabs.query({
       active: true,
@@ -16,7 +25,7 @@ function App() {
 
     chrome.scripting.executeScript({
       target: { tabId: tab.id! },
-      func: (keywords) => {
+      func: (allKeywords: string[]) => {
         const highlightText = (node: Node, keywords: string[]) => {
           if (!node || !node.childNodes) return;
 
@@ -24,38 +33,72 @@ function App() {
             `\\b(${keywords.join("|")})\\b`,
             "gi"
           );
-          node.childNodes.forEach((child) => {
-            if (child.nodeType === node.TEXT_NODE) {
-              const match = child.nodeValue?.match(keywordRegex);
-              if (match && child.nodeValue) {
-                const span = document.createElement("span");
-                span.style.backgroundColor = "yellow";
-                span.textContent = child.nodeValue.replace(
-                  keywordRegex,
-                  (matched) => {
-                    return matched;
-                  }
-                );
 
-                child.replaceWith(span);
-              }
-            } else if (child.nodeType === node.ELEMENT_NODE) {
+          Array.from(node.childNodes).forEach((child) => {
+            if (child.nodeType === Node.ELEMENT_NODE) {
               const element = child as HTMLElement;
+
+              // Skip specific elements
               if (
-                ["SCRIPT", "STYLE", "INPUT", "TEXTAREA"].includes(
+                ["SCRIPT", "STYLE", "TEXTAREA", "INPUT"].includes(
                   element.tagName
                 )
               ) {
-                return; // Skip non-text elements
+                return;
               }
+
+              // If the element is already highlighted, process its children
+              if (
+                element.tagName === "SPAN" &&
+                element.style.backgroundColor === "yellow"
+              ) {
+                highlightText(element, keywords);
+                return;
+              }
+
+              // Recursively process other element nodes
               highlightText(child, keywords);
+            } else if (child.nodeType === Node.TEXT_NODE) {
+              const textContent = child.nodeValue;
+              if (textContent && keywordRegex.test(textContent)) {
+                const fragment = document.createDocumentFragment();
+                let lastIndex = 0;
+
+                // Highlight matched keywords
+                textContent.replace(keywordRegex, (matched, ...args) => {
+                  const matchIndex = args[args.length - 2];
+
+                  // Append text before the match
+                  const beforeMatch = textContent.slice(lastIndex, matchIndex);
+                  if (beforeMatch) {
+                    fragment.appendChild(document.createTextNode(beforeMatch));
+                  }
+
+                  // Append the matched keyword as a highlighted span
+                  const span = document.createElement("span");
+                  span.style.backgroundColor = "yellow";
+                  span.textContent = matched;
+                  fragment.appendChild(span);
+
+                  lastIndex = matchIndex + matched.length;
+                  return matched;
+                });
+
+                // Append remaining text after the last match
+                const afterMatch = textContent.slice(lastIndex);
+                if (afterMatch) {
+                  fragment.appendChild(document.createTextNode(afterMatch));
+                }
+
+                // Replace the text node with the new fragment
+                child.parentNode?.replaceChild(fragment, child);
+              }
             }
           });
         };
-        const keywordsArray = keywords.split(",").map((k) => k.trim());
-        highlightText(document.body, keywordsArray);
+        highlightText(document.body, allKeywords);
       },
-      args: ["citizenship, react, React"], // Add the keywords dynamically from user input
+      args: [combinedKeywords], // Add the keywords dynamically from user input
     });
   };
 
@@ -72,12 +115,17 @@ function App() {
       <h1>Keyword Highlighter</h1>
       <div className="card">
         <p>Enter keywords that you want to highlight separated by comma</p>
-        <input
-          ref={inputRef}
-          type="text"
-          placeholder="e.g., React, JavaScript, TypeScript"
-        />
-        <button onClick={() => highlightKeywords()}>Highlight Keywords</button>
+        <textarea
+          className="card-textarea"
+          ref={textAreaRef}
+          placeholder="Please enter keywords separated by comma"
+          defaultValue="Citizenship, Visa, H1-B, H1B"
+          rows={5}
+          cols={40}
+        ></textarea>
+        <button className="card-button" onClick={highlightKeywords}>
+          Highlight Keywords
+        </button>
       </div>
     </>
   );
