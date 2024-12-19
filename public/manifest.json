@@ -2,13 +2,21 @@
   "manifest_version": 3,
   "name": "Keyword Highlighter",
   "version": "1.0.0",
-  "description": "A simple chrome extension to highlight keywords on a web page",
-  "action": {
-    "default_popup": "index.html"
-  },
-  "permissions": ["scripting", "tabs", "activeTab"],
+  "description": "Highlights keywords on chrome webpages",
+  "permissions": ["scripting", "tabs", "activeTab", "storage"],
   "host_permissions": ["https://*/*", "http://*/*"],
   "background": {
     "service_worker": "serviceWorker.js"
-  }
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Keywords Highlighter"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*"],
+      "js": ["contentScript.js"],
+      "run_at": "document_idle"
+    }
+  ]
 }
