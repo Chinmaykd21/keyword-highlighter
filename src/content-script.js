@@ -52,10 +52,22 @@ function highlightKeywords(keywords) {
   highlightText(document.body, keywords);
 }
 
+const debounce = (func, delay) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
+
+const debouncedHighlightKeywords = debounce(highlightKeywords, 500);
+
 // Fetch stored keywords and apply highlights
 chrome.storage.local.get("keywords", ({ keywords }) => {
   if (keywords && keywords.length > 0) {
-    highlightKeywords(keywords);
+    debouncedHighlightKeywords(keywords);
   }
 });
 
