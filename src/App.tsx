@@ -26,51 +26,14 @@ function App() {
         const domain = url.hostname;
         setCurrentDomain(domain);
 
-        // Check if the domain is LinkedIn or already granted permission
         if (domain.includes("www.linkedin.com")) {
           setUserPermission(true);
         } else {
-          chrome.permissions.contains(
-            { origins: [`https://${domain}/*`] },
-            (granted) => {
-              setUserPermission(granted);
-            }
-          );
+          setUserPermission(false);
         }
       }
     });
   }, []);
-
-  const saveGrantedDomains = (domain: string) => {
-    chrome.storage.local.get("grantedDomains", ({ grantedDomains }) => {
-      const domains = grantedDomains || [];
-
-      if (!domains.includes(domain)) {
-        domains.push(domain);
-        chrome.storage.local.set({ grantedDomains: domains });
-      }
-    });
-  };
-
-  // Handle permission requests for non-LinkedIn domains
-  const handlePermissionRequest = () => {
-    chrome.permissions.request(
-      { origins: [`https://${currentDomain}/*`] },
-      (granted) => {
-        if (granted) {
-          saveGrantedDomains(currentDomain);
-          chrome.runtime.sendMessage({
-            action: "grant permission",
-            domain: currentDomain,
-          });
-          setUserPermission(true);
-          alert(`Permission granted for ${currentDomain}.`);
-        } else {
-          alert("Permission denied. The extension cannot run on this domain.");
-        }
-      }
-    );
-  };
 
   // Save keywords to storage
   const saveKeywords = () => {
@@ -130,11 +93,9 @@ function App() {
         <>
           {/* Permission request UI */}
           <p>
-            The extension needs permission to run on this domain:{" "}
-            <strong>{currentDomain}</strong>. If granted, the extension will
-            highlight keywords on pages of this domain.
+            The extension does not have permission to run on domain:{" "}
+            <strong>{currentDomain}</strong>.
           </p>
-          <button onClick={handlePermissionRequest}>Grant Permission</button>
         </>
       )}
     </div>

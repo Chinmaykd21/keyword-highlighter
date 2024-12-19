@@ -7,8 +7,8 @@ async function injectScriptIfNeeded(tab) {
 
   const domain = new URL(tab.url).hostname;
 
-  // Only inject for LinkedIn or if the domain has granted permissions
-  if (domain === "www.linkedin.com" || (await isPermissionGranted(domain))) {
+  // Only inject for LinkedIn
+  if (domain === "www.linkedin.com") {
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
@@ -23,37 +23,11 @@ async function injectScriptIfNeeded(tab) {
   }
 }
 
-// Check if permissions are granted for a specific domain
-async function isPermissionGranted(domain) {
-  return new Promise((resolve) => {
-    chrome.permissions.contains({ origins: [`https://${domain}/*`] }, resolve);
-  });
-}
-
 // Listen for messages from the popup or content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  const { action, domain } = message;
+  const { action } = message;
 
   switch (action) {
-    case "grant permission":
-      chrome.permissions.request(
-        { origins: [`https://${domain}/*`] },
-        async (granted) => {
-          if (granted) {
-            console.info(`Permission granted for ${domain}`);
-            // Inject the content script if the user grants permission
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-              if (tabs[0]?.id) {
-                injectScriptIfNeeded(tabs[0]);
-              }
-            });
-          } else {
-            console.warn(`Permission denied for ${domain}`);
-          }
-        }
-      );
-      break;
-
     case "highlight keywords":
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]?.id) {
