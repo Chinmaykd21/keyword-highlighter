@@ -59,3 +59,32 @@ chrome.storage.local.get("keywords", ({ keywords }) => {
     highlightKeywords(keywords);
   }
 });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "clear_keywords") {
+    const removeHighlights = (node) => {
+      if (!node || !node.childNodes) return;
+
+      Array.from(node.childNodes).forEach((child) => {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          const element = child;
+
+          if (
+            element.tagName === "SPAN" &&
+            element.style.backgroundColor === "yellow"
+          ) {
+            const parent = element.parentNode;
+            parent?.replaceChild(
+              document.createTextNode(element.textContent || ""),
+              element
+            );
+          } else {
+            removeHighlights(child); // Process child nodes
+          }
+        }
+      });
+    };
+
+    removeHighlights(document.body);
+  }
+});

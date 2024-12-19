@@ -30,6 +30,8 @@ function App() {
       setKeywords("");
       alert("Keywords cleared!");
     });
+
+    chrome.runtime.sendMessage({ action: "clear keywords" });
   };
 
   return (
