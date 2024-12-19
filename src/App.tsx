@@ -6,9 +6,13 @@ function App() {
 
   // Load saved keywords
   useEffect(() => {
-    chrome.storage.local.get("keywords", ({ keywords }) => {
-      setKeywords(keywords?.join(", ") || "");
-    });
+    try {
+      chrome.storage.local.get("keywords", ({ keywords }) => {
+        setKeywords(keywords?.join(", ") || "");
+      });
+    } catch (error) {
+      console.error("Error in content script:", error);
+    }
   }, []);
 
   // Save keywords to storage
@@ -17,22 +21,30 @@ function App() {
       .split(",")
       .map((k) => k.trim())
       .filter(Boolean);
-    chrome.storage.local.set({ keywords: keywordArray }, () => {
-      console.info("Keywords saved", keywordArray);
-    });
+    try {
+      chrome.storage.local.set({ keywords: keywordArray }, () => {
+        console.info("Keywords saved", keywordArray);
+      });
 
-    // Notify service worker to re-inject the content script
-    chrome.runtime.sendMessage({ action: "highlight keywords" });
+      // Notify service worker to re-inject the content script
+      chrome.runtime.sendMessage({ action: "highlight keywords" });
+    } catch (error) {
+      console.error("Error while saving keywords:", error);
+    }
   };
 
   // Clear all saved keywords
   const clearKeywords = () => {
-    chrome.storage.local.remove("keywords", () => {
-      setKeywords("");
-      console.info("Keywords cleared");
-    });
+    try {
+      chrome.storage.local.remove("keywords", () => {
+        setKeywords("");
+        console.info("Keywords cleared");
+      });
 
-    chrome.runtime.sendMessage({ action: "clear keywords" });
+      chrome.runtime.sendMessage({ action: "clear keywords" });
+    } catch (error) {
+      console.error("Error while clearing keywords: ", error);
+    }
   };
 
   return (
