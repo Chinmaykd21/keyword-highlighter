@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Highlights keywords on chrome webpages",
   "permissions": ["scripting", "tabs", "activeTab", "storage"],
-  "host_permissions": ["https://www.linkedin.com/jobs/*"],
+  "host_permissions": ["https://www.linkedin.com/*"],
   "background": {
     "service_worker": "serviceWorker.js"
   },
@@ -14,9 +14,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.linkedin.com/jobs/*"],
+      "matches": ["https://www.linkedin.com/*"],
       "js": ["contentScript.js"],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  }
 }
