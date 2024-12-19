@@ -1,3 +1,6 @@
+// This immediately invoked function expression is done in order to
+// variable name collisions. IIFE ensures that variables are scoped
+// to the script and do not leak into global namespace
 (() => {
   // Highlight keywords on the page
   function highlightKeywords(keywords) {
