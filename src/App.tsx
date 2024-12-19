@@ -91,7 +91,6 @@ function App() {
         </>
       ) : (
         <>
-          {/* Permission request UI */}
           <p>
             The extension does not have permission to run on domain:{" "}
             <strong>{currentDomain}</strong>.
