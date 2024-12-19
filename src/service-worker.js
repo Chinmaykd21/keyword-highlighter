@@ -13,6 +13,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 // Inject content script for matching URLs
 async function injectScriptIfNeeded(tab) {
   if (tab.url && /^https?:\/\//.test(tab.url)) {
+    console.log("Injection Successful");
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },

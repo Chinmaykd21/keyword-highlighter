@@ -55,6 +55,7 @@ function highlightKeywords(keywords) {
 // Fetch stored keywords and apply highlights
 chrome.storage.local.get("keywords", ({ keywords }) => {
   if (keywords && keywords.length > 0) {
+    console.log("Fetched Keywords:", keywords);
     highlightKeywords(keywords);
   }
 });
