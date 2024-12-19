@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import "./App.css";
 
 function App() {
   const [keywords, setKeywords] = useState<string>("");
@@ -35,7 +36,7 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="popup-container">
       <h3>Keyword Highlighter</h3>
       <textarea
         value={keywords}
@@ -45,8 +46,12 @@ function App() {
         cols={40}
       />
       <br />
-      <button onClick={saveKeywords}>Save Keywords</button>
-      <button onClick={clearKeywords}>Clear Keywords</button>
+      <div className="button-row">
+        <button onClick={saveKeywords}>Save Keywords</button>
+        <button className="clear-button" onClick={clearKeywords}>
+          Clear Keywords
+        </button>
+      </div>
     </div>
   );
 }
