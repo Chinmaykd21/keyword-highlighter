@@ -61,7 +61,8 @@ chrome.storage.local.get("keywords", ({ keywords }) => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "clear_keywords") {
+  if (message.action === "clear keywords") {
+    console.log("clear keywords called");
     const removeHighlights = (node) => {
       if (!node || !node.childNodes) return;
 

@@ -15,6 +15,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     );
   }
+
+  if (message.action === "clear keywords") {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0].id) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: "clear keywords" });
+      }
+    });
+  }
 });
 
 // Monitor active tab changes and tab updates
