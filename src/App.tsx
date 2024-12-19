@@ -19,6 +19,9 @@ function App() {
     chrome.storage.local.set({ keywords: keywordArray }, () => {
       alert("Keywords saved!");
     });
+
+    // Notify service worker to re-inject the content script
+    chrome.runtime.sendMessage({ action: "highlight keywords" });
   };
 
   // Clear all saved keywords

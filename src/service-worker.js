@@ -1,3 +1,22 @@
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "highlight keywords") {
+    chrome.tabs.query(
+      {
+        active: true,
+        currentWindow: true,
+      },
+      (tabs) => {
+        if (tabs.length > 0 && tabs[0].id) {
+          chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            files: ["contentScript.js"],
+          });
+        }
+      }
+    );
+  }
+});
+
 // Monitor active tab changes and tab updates
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
   const tab = await chrome.tabs.get(activeInfo.tabId);
