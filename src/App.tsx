@@ -70,7 +70,7 @@ function App() {
 
   return (
     <div className="popup-container">
-      <h3>Keyword Highlighter</h3>
+      <h3>Keywords Highlighter</h3>
 
       {userPermission ? (
         <>
