@@ -17,7 +17,7 @@ function App() {
       .map((k) => k.trim())
       .filter(Boolean);
     chrome.storage.local.set({ keywords: keywordArray }, () => {
-      alert("Keywords saved!");
+      console.info("Keywords saved", keywordArray);
     });
 
     // Notify service worker to re-inject the content script
@@ -28,7 +28,7 @@ function App() {
   const clearKeywords = () => {
     chrome.storage.local.remove("keywords", () => {
       setKeywords("");
-      alert("Keywords cleared!");
+      console.info("Keywords cleared");
     });
 
     chrome.runtime.sendMessage({ action: "clear keywords" });

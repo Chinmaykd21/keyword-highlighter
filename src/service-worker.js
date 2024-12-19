@@ -17,10 +17,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.action === "clear keywords") {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0].id) {
-        chrome.tabs.sendMessage(tabs[0].id, { action: "clear keywords" });
-      }
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach((tab) => {
+        if (tab.id && /^https?:\/\//.test(tab.url)) {
+          // Sending clear keywords message to every tab
+          chrome.tabs.sendMessage(tab.id, {
+            action: "clear keywords",
+          });
+        }
+      });
     });
   }
 });
