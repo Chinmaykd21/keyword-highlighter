@@ -2,6 +2,8 @@
 // variable name collisions. IIFE ensures that variables are scoped
 // to the script and do not leak into global namespace
 (() => {
+  const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
   // Highlight keywords on the page
   function highlightKeywords(keywords) {
     const highlightText = (node, keywords) => {
@@ -38,6 +40,7 @@
 
               const span = document.createElement("span");
               span.style.backgroundColor = "yellow";
+              span.style.color = isDarkMode ? "black" : "inherit";
               span.textContent = match;
               fragment.appendChild(span);
 
