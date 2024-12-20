@@ -148,4 +148,5 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgments
 
-- Inspired by the need to simplify keyword identification on professional platforms like LinkedIn.
+- This project was inspired by the need to enhance browser search functionality, which traditionally supports only one keyword (exact match) at a time.
+- The Keyword Highlighter extension addresses this limitation by enabling users to highlight multiple keywords simultaneously, separated by commas, offering a more flexible and efficient browsing experience.
